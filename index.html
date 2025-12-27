@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>St. Joseph Drug Inventory Checklist</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --green:#1f7a3a;
+  --warn:#f39c12;
+  --danger:#c0392b;
+}
+
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  background:#eef5f0;
+}
+
+header{
+  background:var(--green);
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:10px;
+}
+
+.card{
+  background:#fff;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:6px;
+}
+
+input, select, button{
+  width:100%;
+  padding:6px;
+  margin:4px 0;
+}
+
+button{
+  background:var(--green);
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+
+th, td{
+  border:1px solid #ccc;
+  padding:5px;
+  text-align:center;
+}
+
+th{
+  background:var(--green);
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<header>ST. JOSEPH DRUG INVENTORY CHECKLIST</header>
+
+<div class="container">
+
+  <div class="card">
+    <input id="search" placeholder="Search product..." oninput="render()">
+    <button onclick="toggleForm()">➕ Add Item</button>
+  </div>
+
+  <div class="card" id="form" style="display:none">
+    <input id="product" placeholder="Product Name">
+    <input id="brand" placeholder="Brand">
+    <input id="dosage" placeholder="Dosage">
+    <label>Manufacturing Date</label>
+    <input id="mfg" type="date">
+    <label>Expiration Date</label>
+    <input id="exp" type="date">
+    <input id="systemQty" type="number" placeholder="System Qty">
+    <input id="actualQty" type="number" placeholder="Actual Qty">
+    <button onclick="save()">Save</button>
+    <button onclick="toggleForm()">Cancel</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Brand</th>
+          <th>Dosage</th>
+          <th>MFG</th>
+          <th>EXP</th>
+          <th>System</th>
+          <th>Actual</th>
+          <th>Variance</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("inventory") || "[]");
+
+function toggleForm(){
+  form.style.display = form.style.display === "none" ? "block" : "none";
+}
+
+function save(){
+  if(!product.value.trim()){
+    alert("Product name required");
+    return;
+  }
+
+  data.push({
+    product: product.value.trim(),
+    brand: brand.value,
+    dosage: dosage.value,
+    mfg: mfg.value,
+    exp: exp.value,
+    systemQty: Number(systemQty.value),
+    actualQty: Number(actualQty.value)
+  });
+
+  localStorage.setItem("inventory", JSON.stringify(data));
+  toggleForm();
+  render();
+}
+
+function render(){
+  const q = search.value.toLowerCase();
+  list.innerHTML = data
+    .filter(i => i.product.toLowerCase().startsWith(q))
+    .map(i => `
+      <tr>
+        <td>${i.product}</td>
+        <td>${i.brand}</td>
+        <td>${i.dosage}</td>
+        <td>${i.mfg}</td>
+        <td>${i.exp}</td>
+        <td>${i.systemQty}</td>
+        <td>${i.actualQty}</td>
+        <td>${i.actualQty - i.systemQty}</td>
+      </tr>
+    `).join("");
+}
+
+render();
+</script>
+
+<!-- ✅ STEP 1: SERVICE WORKER REGISTRATION -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .catch(() => console.log("Service worker not yet added"));
+}
+</script>
+
+</body>
+</html>

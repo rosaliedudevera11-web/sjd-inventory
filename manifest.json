@@ -1,0 +1,8 @@
+{
+  "name": "St. Joseph Drug Inventory Checklist",
+  "short_name": "Drug Inventory",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1f7a3a",
+  "theme_color": "#1f7a3a"
+}
